@@ -7,24 +7,26 @@
 % between the fluid and the solid.
 % written by J. Gottsmann (November 2024)
 
-clc; clear; close all;
+%clc; clear; 
+close all;
 
 %% Parameters
 T_solid_initial = 950+273; % Initial temperature of the solid (K)
 T_fluid = 283;         % Temperature of the cold fluid (K)
 h = 1000;                % Heat transfer coefficient (W/m^2.K)
 r1=0.2;                % Radius of bore hole (m)
-ht1=200;                  %length of drill  inside solid (m)
+ht1=45;                  %length of drill  inside solid (m)
 A =2*pi*r1*ht1%+r1^2*pi; % Surface area of solid exposed to fluid; walls only / remove % to also include bottom (m^2)
-k=1; %modulator of surface area by cracking; use k=1, or k=500 to reproduce data presented in Fig. 3 of the paper
+k=25; %modulator of surface area by cracking; use k=1, or k=25 to reproduce data presented in Fig. 3 of the paper
 A=A*k;
-r2=930;               %radius of solid (m)
+r2=190;               %radius of solid (m)
 ht2=ht1;               % thickness of solid
 V_solid = r2^2*pi*ht2; % Volume of the solid (m^3)
 rho_solid = 2315;      % Density of the solid (kg/m^3)
 cp_solid = 1200;        % Specific heat capacity of the solid (J/kg.K)
-t_final = 1.3e7;  % Total simulation time (s)
 dt = 86400;            % Time step (s)
+t_final = dt*30*4.5;  % Total simulation time (s)
+
 
 %% Derived parameters
 mass_solid = rho_solid * V_solid; % Mass of the solid (kg)
@@ -44,3 +46,10 @@ for i = 2:length(t)
     % Temperature change using energy balance (Q = m * c * dT)
     T_solid(i) = T_solid(i-1) - (Q_dot(i) * dt) / (mass_solid * cp_solid);
 end
+ 
+plot(t/dt,T_solid1); hold on
+plot(t/dt,T_solid);
+xlabel("Time (d)")
+ylabel("Temperature of solid (K)")
+text(60,1250,"Cooling through borehole wall only; k=1");
+text(20,750,"Cooling through borehole wall and cracking; k=25")
